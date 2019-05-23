@@ -11,10 +11,6 @@ typedef struct LinkedList {
     int size;
 } LinkedList;
 
-typedef struct LinkedListTraversal {
-    Node *current;
-} LinkedListTraversal;
-
 void add(Node new_element, LinkedList *list);
 void remove_last(LinkedList *list);
 LinkedList create_linked_list();
