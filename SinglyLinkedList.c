@@ -11,7 +11,11 @@ typedef struct LinkedList {
     int size;
 } LinkedList;
 
-void add(Node new_element, LinkedList *list);
+typedef struct LinkedListTraversal {
+    Node *current;
+} LinkedListTraversal;
+
+void add(Node *new_element, LinkedList *list);
 void remove_last(LinkedList *list);
 LinkedList create_linked_list();
 Node create_node(int data);
@@ -24,22 +28,26 @@ int main() {
     //NEED THIS BLOCK TO PRINT 12
     LinkedList test = create_linked_list();
     Node test_node = create_node(12);
-    add(test_node, &test);
+    add(&test_node, &test);
     printf("Data: %d\n", data_at(&test, 1));
 
     return 0;
 }
 
 //Adds a new node to the end of the linked list
-void add(Node new_element, LinkedList *list) {
+/* Bug fix: new_element was being passed by value, so a NEW COPY was created inside the function
+* This meant that trying to set the head to the address of new_element using & gave it the address of the COPY,
+*  not the ACTUAL Node that we want to add.
+*/
+void add(Node *new_element, LinkedList *list) {
     if (list -> size == 0) {
-        list -> head = &new_element;
+        list -> head = new_element;
         list -> tail = list -> head;
         list -> size++;
     }
     else {
-        list -> tail -> next = &new_element;
-        list -> tail = &new_element;
+        list -> tail -> next = new_element;
+        list -> tail = new_element;
         list -> tail -> next = NULL;
         list -> size++;    
     }
