@@ -14,7 +14,6 @@ typedef struct LinkedList {
 
 //Complete functions
 void add(Node *new_element, LinkedList *list);
-void remove_last(LinkedList *list);
 LinkedList* create_linked_list();
 Node* create_node(int data);
 int data_at(LinkedList *list, int node_pos);
@@ -23,6 +22,7 @@ void clear_list(LinkedList* list);
 int remove_at(LinkedList* list, int node_pos);
 int add_at(Node* new_element, LinkedList* list, int node_pos);
 int replace_at(Node* new_element, LinkedList* list, int node_pos);
+int remove_last(LinkedList *list);
 
 //MAIN
 int main() {
@@ -105,11 +105,15 @@ int add_at(Node* new_element, LinkedList* list, int node_pos) {
 }
 
 //Removes the last element from the linked list
-void remove_last(LinkedList *list) {
-    if (list -> size == 1) {
+int remove_last(LinkedList *list) {
+    if(list -> size <= 0) {
+        return 0;
+    }
+    else if (list -> size == 1) {
         free(list -> head);
         list -> head = list -> tail = NULL;
         list -> size = 0;
+        return 1;
     }
     else {
         Node *trav = list -> head;
@@ -123,6 +127,8 @@ void remove_last(LinkedList *list) {
         trav -> next = NULL;
         list -> tail = trav;
         list -> size--;
+
+        return 1;
     }
     
 }
@@ -194,7 +200,7 @@ int data_at(LinkedList *list, int node_pos) {
     Node* trav = list -> head;
 
     //If user enters node_pos less than 1, return error value
-    if (node_pos < 1) {
+    if (node_pos > list -> size || node_pos < 1) {
         return -1;
     }
     else {
@@ -206,7 +212,6 @@ int data_at(LinkedList *list, int node_pos) {
     }
 }
 
-//Currently not working as a result of data_at malfunctioning
 void print_list_contents(LinkedList *list) {
     if (list -> size > 0) {
         for (int i = 1; i <= list -> size; i++) {
