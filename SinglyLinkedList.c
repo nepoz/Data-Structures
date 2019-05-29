@@ -21,8 +21,6 @@ int data_at(LinkedList *list, int node_pos);
 void print_list_contents(LinkedList *list);
 void clear_list(LinkedList* list);
 int remove_at(LinkedList* list, int node_pos);
-
-//TODO functions
 int add_at(Node* new_element, LinkedList* list, int node_pos);
 int replace_at(Node* new_element, LinkedList* list, int node_pos);
 
@@ -49,6 +47,14 @@ int main() {
     printf("\n");
     remove_at(&test, 3);
     print_list_contents(&test);
+
+    printf("\n");
+    add_at(create_node(13), &test, 1);
+    print_list_contents(&test);
+
+    printf("\n");
+    remove_at(&test, 1);
+    print_list_contents(&test);
     return 0;
 }
 
@@ -70,6 +76,32 @@ void add(Node *new_element, LinkedList *list) {
         list -> size++;    
     }
 
+}
+
+int add_at(Node* new_element, LinkedList* list, int node_pos) {
+    if (node_pos > list -> size || node_pos < 1) {
+        return -1;
+    }
+    else if (node_pos == 1) {
+        new_element -> next = list -> head;
+        list -> head = new_element;
+        list -> size++;
+        return 1;
+    }
+    else {
+        Node *trav = list -> head;
+
+        for (int i = 1; i < node_pos - 1; i++) {
+            trav = trav -> next;
+        }
+
+        //At this point, trav is one before the position where node is being added
+        new_element -> next = trav -> next;
+        trav -> next = new_element; 
+        list -> size++;
+
+        return 1;
+    }
 }
 
 //Removes the last element from the linked list
@@ -107,6 +139,16 @@ int remove_at(LinkedList* list, int node_pos) {
     }
     else if (list -> size == 1 || node_pos == list -> size) {
         remove_last(list);
+        list -> size--;
+        
+        return 1;
+    }
+    else if (node_pos == 1) {
+        Node* temp = list -> head -> next;
+        free(list -> head);
+        list -> size--;
+        list -> head = temp;
+        
         return 1;
     }
     else {
