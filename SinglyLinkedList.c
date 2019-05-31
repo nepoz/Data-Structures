@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct Node {
     struct Node *next;
@@ -11,26 +12,49 @@ typedef struct LinkedList {
     int size;
 } LinkedList;
 
-typedef struct LinkedListTraversal {
-    Node *current;
-} LinkedListTraversal;
-
+//Complete functions
 void add(Node *new_element, LinkedList *list);
-void remove_last(LinkedList *list);
-LinkedList create_linked_list();
-Node create_node(int data);
+LinkedList* create_linked_list();
+Node* create_node(int data);
 int data_at(LinkedList *list, int node_pos);
 void print_list_contents(LinkedList *list);
+void clear_list(LinkedList* list);
+int remove_at(LinkedList* list, int node_pos);
+int add_at(Node* new_element, LinkedList* list, int node_pos);
+int replace_at(Node* new_element, LinkedList* list, int node_pos);
+int remove_last(LinkedList *list);
 
 //MAIN
 int main() {
     
-    //NEED THIS BLOCK TO PRINT 12
-    LinkedList test = create_linked_list();
-    Node test_node = create_node(12);
-    add(&test_node, &test);
-    printf("Data: %d\n", data_at(&test, 1));
+    LinkedList test = *create_linked_list();
+    Node test_node[] = {*create_node(12), *create_node(10), *create_node(1), *create_node(15)};
+    for (int i = 0; i < 4; i++) {
+        add(&test_node[i], &test);
+    }
+    print_list_contents(&test);
+    remove_last(&test);
+    print_list_contents(&test);
 
+    clear_list(&test);
+    print_list_contents(&test);
+
+    for (int i = 0; i < 4; i++) {
+        add(&test_node[i], &test);
+    }
+
+    print_list_contents(&test);
+    printf("\n");
+    remove_at(&test, 3);
+    print_list_contents(&test);
+
+    printf("\n");
+    add_at(create_node(13), &test, 1);
+    print_list_contents(&test);
+
+    printf("\n");
+    remove_at(&test, 1);
+    print_list_contents(&test);
     return 0;
 }
 
@@ -54,30 +78,120 @@ void add(Node *new_element, LinkedList *list) {
 
 }
 
-//Removes the last element from the linked list
-void remove_last(LinkedList *list) {
-    Node *trav = list -> head;
+int add_at(Node* new_element, LinkedList* list, int node_pos) {
+    if (node_pos > list -> size || node_pos < 1) {
+        return -1;
+    }
+    else if (node_pos == 1) {
+        new_element -> next = list -> head;
+        list -> head = new_element;
+        list -> size++;
+        return 1;
+    }
+    else {
+        Node *trav = list -> head;
 
-    while (trav -> next != list -> tail) {
+        for (int i = 1; i < node_pos - 1; i++) {
+            trav = trav -> next;
+        }
+
+        //At this point, trav is one before the position where node is being added
+        new_element -> next = trav -> next;
+        trav -> next = new_element; 
+        list -> size++;
+
+        return 1;
+    }
+}
+
+//Removes the last element from the linked list
+int remove_last(LinkedList *list) {
+    if(list -> size <= 0) {
+        return 0;
+    }
+    else if (list -> size == 1) {
+        free(list -> head);
+        list -> head = list -> tail = NULL;
+        list -> size = 0;
+        return 1;
+    }
+    else {
+        Node *trav = list -> head;
+
+        while (trav -> next != list -> tail) {
         trav = trav -> next;
     } 
 
-    //At this point, the Node's next pointer will point to tail
-    trav -> next = NULL;
+        //At this point, the Node's next pointer will point to tail
+        free(trav -> next);
+        trav -> next = NULL;
+        list -> tail = trav;
+        list -> size--;
+
+        return 1;
+    }
+    
+}
+
+void clear_list(LinkedList* list) {
+    while (list -> size != 0) {
+        remove_last(list);
+    }
+}
+
+int remove_at(LinkedList* list, int node_pos) {
+    if (node_pos > list -> size || node_pos < 1) {
+        return -1;
+    }
+    else if (list -> size == 1 || node_pos == list -> size) {
+        remove_last(list);
+        list -> size--;
+        
+        return 1;
+    }
+    else if (node_pos == 1) {
+        Node* temp = list -> head -> next;
+        free(list -> head);
+        list -> size--;
+        list -> head = temp;
+        
+        return 1;
+    }
+    else {
+        Node *trav = list -> head;
+
+        for (int node = 1; node < node_pos - 1; node++) {
+            trav = trav -> next;
+        }
+
+        //At this point trav is one before what we want to remove
+        Node *temp = trav -> next;
+        trav -> next = temp -> next;
+        free(temp);
+        list -> size--;
+
+        return 1;
+    }
 }
 
 //Creates a new, empty linked list
-LinkedList create_linked_list() {
-    LinkedList new_list = {NULL,
-                           NULL,
-                           0};
+LinkedList* create_linked_list() {
+    LinkedList* new_list = (LinkedList*) malloc(sizeof(LinkedList));
+
+    new_list -> head = NULL;
+    new_list -> tail = NULL;
+    new_list -> size = 0;
     
-    return (new_list);
+    return new_list;
 }
 
 //Creates a new node initially pointing to no 'next' node
-Node create_node(int data) {
-    Node fresh_node = {NULL, data}; 
+Node* create_node(int data) {
+    Node* fresh_node = (Node*) malloc(sizeof(Node));
+
+    fresh_node -> data = data;
+    fresh_node -> next = NULL;
+
     return fresh_node;
 }
 
@@ -86,7 +200,7 @@ int data_at(LinkedList *list, int node_pos) {
     Node* trav = list -> head;
 
     //If user enters node_pos less than 1, return error value
-    if (node_pos < 1) {
+    if (node_pos > list -> size || node_pos < 1) {
         return -1;
     }
     else {
@@ -98,9 +212,13 @@ int data_at(LinkedList *list, int node_pos) {
     }
 }
 
-//Currently not working as a result of data_at malfunctioning
 void print_list_contents(LinkedList *list) {
-    for (int i = 1; i <= list -> size; i++) {
-        printf("Data = %d\n", data_at(list, i));
+    if (list -> size > 0) {
+        for (int i = 1; i <= list -> size; i++) {
+            printf("Data = %d\n", data_at(list, i));
+        }
+    }
+    else {
+        printf("Did not find any elements!\n");
     }
 }
