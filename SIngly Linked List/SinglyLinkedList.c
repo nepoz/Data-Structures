@@ -24,45 +24,7 @@ int add_at(Node* new_element, LinkedList* list, int node_pos);
 int replace_at(Node* new_element, LinkedList* list, int node_pos);
 int remove_last(LinkedList *list);
 
-//MAIN
-int main() {
-    
-    LinkedList test = *create_linked_list();
-    Node test_node[] = {*create_node(12), *create_node(10), *create_node(1), *create_node(15)};
-    for (int i = 0; i < 4; i++) {
-        add(&test_node[i], &test);
-    }
-    print_list_contents(&test);
-    remove_last(&test);
-    print_list_contents(&test);
-
-    clear_list(&test);
-    print_list_contents(&test);
-
-    for (int i = 0; i < 4; i++) {
-        add(&test_node[i], &test);
-    }
-
-    print_list_contents(&test);
-    printf("\n");
-    remove_at(&test, 3);
-    print_list_contents(&test);
-
-    printf("\n");
-    add_at(create_node(13), &test, 1);
-    print_list_contents(&test);
-
-    printf("\n");
-    remove_at(&test, 1);
-    print_list_contents(&test);
-    return 0;
-}
-
 //Adds a new node to the end of the linked list
-/* Bug fix: new_element was being passed by value, so a NEW COPY was created inside the function
-* This meant that trying to set the head to the address of new_element using & gave it the address of the COPY,
-*  not the ACTUAL Node that we want to add.
-*/
 void add(Node *new_element, LinkedList *list) {
     if (list -> size == 0) {
         list -> head = new_element;
