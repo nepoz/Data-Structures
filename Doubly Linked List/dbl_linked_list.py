@@ -72,6 +72,38 @@ class LinkedList(object):
 
         print(contents)
 
+    def add_at(self, pos, data):
+        new_node = Node(None, None, data)
+
+        if (pos < 0 or pos >= self.size):
+            raise IndexError
+        elif (pos == 0):
+            self.head.prev = new_node
+            new_node.next = self.head
+            self.head = new_node
+        else:
+            trav = self.head
+            current_pos = 0
+
+            ##First we fix it from the left
+            while (current_pos != pos - 1):
+                trav = trav.next
+
+            trav.next = new_node
+            new_node.prev = trav
+
+            ##Then we fix it from the right ()
+            while (current_pos != pos):
+                print('at node ', current_pos)
+                trav = trav.next
+
+            trav.prev = new_node
+            new_node.next = trav
+
+         ##Finally, update size to reflect change
+        self.size += 1            
+
+
 test = LinkedList.create_empty()
 test.print_contents()
 
@@ -83,6 +115,14 @@ test.print_contents()
 print("size: ", test.size)
 
 test.remove_last()
+test.print_contents()
+print("size: ", test.size)
+
+test.add_at(0, 13)
+test.print_contents()
+print("size: ", test.size)
+
+test.add_at(1, 'wedge')
 test.print_contents()
 print("size: ", test.size)
 
