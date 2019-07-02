@@ -27,6 +27,10 @@ class LinkedList(object):
     def is_empty(self):
         return self.head.data == None
 
+    def get_size(self):
+        return self.size
+
+    #O(1) time complexity
     def extend(self, data):
         if (self.is_empty()):
             self.head = Node(None, None, data)
@@ -36,17 +40,27 @@ class LinkedList(object):
             self.tail.next = new_entry
             self.tail = new_entry           #AFTER previous tail has been reformatted
 
+        #Update size of linked list 
+        self.size += 1
+
+    #O(1) time complexity
     def remove_last(self):
         tail_to_be = self.tail.prev if self.tail.prev else None
         
         if (not tail_to_be):
             self.head = Node(None, None, None)
-            return
-        
-        tail_to_be.next = None
-        del(self.tail)
-        self.tail = tail_to_be
+            self.size = 0
+        else:
+            tail_to_be.next = None
+            self.tail = tail_to_be
+            self.size -= 1
 
+    #O(n) time complexity
+    def clear(self):
+        self.head = self.tail = Node(None, None, None)
+        self.size = 0
+
+    #O(n) time complexity
     def print_contents(self):
         contents = '['
         trav = self.head
@@ -66,5 +80,12 @@ test.print_contents()
 
 test.extend('Goodbye')
 test.print_contents()
+print("size: ", test.size)
 
-              
+test.remove_last()
+test.print_contents()
+print("size: ", test.size)
+
+test.clear()
+test.print_contents()
+print("size: ", test.size)
